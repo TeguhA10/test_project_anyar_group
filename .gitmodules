@@ -1,0 +1,12 @@
+[submodule "auth_service"]
+	path = auth_service
+	url = https://github.com/TeguhA10/auth_service
+[submodule "employee_service"]
+	path = employee_service
+	url = https://github.com/TeguhA10/employee_service
+[submodule "purchasing_service"]
+	path = purchasing_service
+	url = https://github.com/TeguhA10/purchasing_service
+[submodule "fe-host"]
+	path = fe-host
+	url = https://github.com/TeguhA10/fe-host
