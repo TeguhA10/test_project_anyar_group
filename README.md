@@ -27,14 +27,14 @@ graph TD
 
 ## Services & Ports Mappings
 
-The entire stack is configured via the root [docker-compose.yml](file:///d:/My%20Document/PT.%20Anyar%20Retail%20Group/PROJECT/docker-compose.yml) and runs on the following ports:
+The entire stack is configured via the root [docker-compose.yml](https://github.com/TeguhA10/test_project_anyar_group/blob/main/docker-compose.yml) and runs on the following ports:
 
 | Service Name | Description | Host Port | Container Port | Build Directory | DB Connected |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **frontend** | React + Vite served via Nginx | **5173** | 80 | [fe-host](file:///d:/My%20Document/PT.%20Anyar%20Retail%20Group/PROJECT/fe-host) | *None (Relative Proxy)* |
-| **auth-service** | Authentication, JWT issue, Users API | **8001** | 8001 | [auth_service](file:///d:/My%20Document/PT.%20Anyar%20Retail%20Group/PROJECT/auth_service) | `db_auth` (on `mysql-auth`) |
-| **employee-service** | HRIS, Branches, Employees, Positions | **8002** | 8002 | [employee_service](file:///d:/My%20Document/PT.%20Anyar%20Retail%20Group/PROJECT/employee_service) | `db_hrm` (on `mysql-employee`) |
-| **purchasing-service** | Purchasing, Vendors, Items, POs | **8003** | 8003 | [purchasing_service](file:///d:/My%20Document/PT.%20Anyar%20Retail%20Group/PROJECT/purchasing_service) | `db_purchasing` (on `mysql-purchasing`) |
+| **frontend** | React + Vite served via Nginx | **5173** | 80 | [fe-host](https://github.com/TeguhA10/fe-host) | *None (Relative Proxy)* |
+| **auth-service** | Authentication, JWT issue, Users API | **8001** | 8001 | [auth_service](https://github.com/TeguhA10/auth_service) | `db_auth` (on `mysql-auth`) |
+| **employee-service** | HRIS, Branches, Employees, Positions | **8002** | 8002 | [employee_service](https://github.com/TeguhA10/employee_service) | `db_hrm` (on `mysql-employee`) |
+| **purchasing-service** | Purchasing, Vendors, Items, POs | **8003** | 8003 | [purchasing_service](https://github.com/TeguhA10/purchasing_service) | `db_purchasing` (on `mysql-purchasing`) |
 | **mysql-auth** | MySQL 8.4 Database for Auth | **3306** | 3306 | *Pre-built MySQL image* | - |
 | **mysql-employee** | MySQL 8.4 Database for HRIS | **3307** | 3306 | *Pre-built MySQL image* | - |
 | **mysql-purchasing** | MySQL 8.4 Database for Purchasing | **3308** | 3306 | *Pre-built MySQL image* | - |
@@ -93,12 +93,12 @@ Open your browser and navigate to:
 http://localhost:5173
 ```
 - **Login Credentials:**
-  - **Superadmin:** `admin@example.com` / Password: `password` (hashed locally in database)
-  - **Admin HRD:** `hrd@example.com` / Password: `password`
-  - **Admin Purchasing:** `purchasing@anyar.co.id` / Password: `password`
+  - **Superadmin:** `admin@example.com` / Password: `password123` (hashed locally in database)
+  - **Admin HRD:** `hrd@example.com` / Password: `password123`
+  - **Admin Purchasing:** `purchasing@anyar.co.id` / Password: `password123`
 
 ### 3. Postman Collections
 Postman collections are provided at the root of the project to test APIs independently:
-- [AUTH SERVICE.postman_collection.json](file:///d:/My%20Document/PT.%20Anyar%20Retail%20Group/PROJECT/AUTH%20SERVICE.postman_collection.json)
-- [EMPLOYEE SERVICE.postman_collection.json](file:///d:/My%20Document/PT.%20Anyar%20Retail%20Group/PROJECT/EMPLOYEE%20SERVICE.postman_collection.json)
-- [PURCHASING SERVICE.postman_collection.json](file:///d:/My%20Document/PT.%20Anyar%20Retail%20Group/PROJECT/PURCHASING%20SERVICE.postman_collection.json)
+- [AUTH SERVICE.postman_collection.json](https://github.com/TeguhA10/test_project_anyar_group/blob/main/AUTH%20SERVICE.postman_collection.json)
+- [EMPLOYEE SERVICE.postman_collection.json](https://github.com/TeguhA10/test_project_anyar_group/blob/main/EMPLOYEE%20SERVICE.postman_collection.json)
+- [PURCHASING SERVICE.postman_collection.json](https://github.com/TeguhA10/test_project_anyar_group/blob/main/PURCHASING%20SERVICE.postman_collection.json)
