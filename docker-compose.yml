@@ -1,0 +1,185 @@
+version: "3.9"
+
+services:
+  # --- DATABASES ---
+  mysql-auth:
+    image: mysql:8.4
+    container_name: mysql-auth
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_auth
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_auth_data:/var/lib/mysql
+      - ./mysql/init/dump-db_auth-202606142340.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mysql-employee:
+    image: mysql:8.4
+    container_name: mysql-employee
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_hrm
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_employee_data:/var/lib/mysql
+      - ./mysql/init/dump-db_hrm-202606142340.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mysql-purchasing:
+    image: mysql:8.4
+    container_name: mysql-purchasing
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_purchasing
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_purchasing_data:/var/lib/mysql
+      - ./mysql/init/dump-db_purchasing-202606142340.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # --- BACKEND SERVICES ---
+  auth-service:
+    build:
+      context: ./auth_service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    restart: always
+    environment:
+      - APP_NAME=AuthService
+      - APP_ENV=local
+      - APP_KEY=base64:79SupuG68OAGs1u/EiEMhHyhx9C8QCIZfH0bLYEUX0I=
+      - APP_DEBUG=true
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql-auth
+      - DB_PORT=3306
+      - DB_DATABASE=db_auth
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - JWT_ACCESS_SECRET=1f4c2a8d7b6e9f3a5c1d8e0f2a7b9c4d6e1f3a8b5c7d9e2f4a6b8c0d1e3f5a7b9c2d4e6f8a0b1c3d5e7f9
+      - JWT_ACCESS_COOKIE=access_token
+      - JWT_REFRESH_COOKIE=refresh_token
+      - JWT_ACCESS_COOKIE_MINUTES=15
+      - JWT_REFRESH_COOKIE_MINUTES=43200
+      - JWT_COOKIE_SECURE=false
+      - JWT_COOKIE_HTTP_ONLY=true
+      - JWT_COOKIE_SAME_SITE=lax
+      - JWT_COOKIE_PATH=/
+      - JWT_COOKIE_DOMAIN=
+    ports:
+      - "8001:8001"
+    depends_on:
+      mysql-auth:
+        condition: service_healthy
+
+  employee-service:
+    build:
+      context: ./employee_service
+      dockerfile: Dockerfile
+    container_name: employee-service
+    restart: always
+    environment:
+      - APP_NAME=EmployeeService
+      - APP_ENV=local
+      - APP_KEY=base64:79SupuG68OAGs1u/EiEMhHyhx9C8QCIZfH0bLYEUX0I=
+      - APP_DEBUG=true
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql-employee
+      - DB_PORT=3306
+      - DB_DATABASE=db_hrm
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - AUTH_SERVICE_URL=http://auth-service:8001
+      - JWT_ACCESS_SECRET=1f4c2a8d7b6e9f3a5c1d8e0f2a7b9c4d6e1f3a8b5c7d9e2f4a6b8c0d1e3f5a7b9c2d4e6f8a0b1c3d5e7f9
+      - JWT_ACCESS_COOKIE=access_token
+      - JWT_REFRESH_COOKIE=refresh_token
+      - JWT_ACCESS_COOKIE_MINUTES=15
+      - JWT_REFRESH_COOKIE_MINUTES=43200
+      - JWT_COOKIE_SECURE=false
+      - JWT_COOKIE_HTTP_ONLY=true
+      - JWT_COOKIE_SAME_SITE=lax
+      - JWT_COOKIE_PATH=/
+      - JWT_COOKIE_DOMAIN=
+    ports:
+      - "8002:8002"
+    depends_on:
+      mysql-employee:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+
+  purchasing-service:
+    build:
+      context: ./purchasing_service
+      dockerfile: Dockerfile
+    container_name: purchasing-service
+    restart: always
+    environment:
+      - APP_NAME=PurchasingService
+      - APP_ENV=local
+      - APP_KEY=base64:79SupuG68OAGs1u/EiEMhHyhx9C8QCIZfH0bLYEUX0I=
+      - APP_DEBUG=true
+      - DB_CONNECTION=mysql
+      - DB_HOST=mysql-purchasing
+      - DB_PORT=3306
+      - DB_DATABASE=db_purchasing
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - AUTH_SERVICE_URL=http://auth-service:8001
+      - EMPLOYEE_SERVICE_URL=http://employee-service:8002
+      - JWT_ACCESS_SECRET=1f4c2a8d7b6e9f3a5c1d8e0f2a7b9c4d6e1f3a8b5c7d9e2f4a6b8c0d1e3f5a7b9c2d4e6f8a0b1c3d5e7f9
+      - JWT_ACCESS_COOKIE=access_token
+      - JWT_REFRESH_COOKIE=refresh_token
+      - JWT_ACCESS_COOKIE_MINUTES=15
+      - JWT_REFRESH_COOKIE_MINUTES=43200
+      - JWT_COOKIE_SECURE=false
+      - JWT_COOKIE_HTTP_ONLY=true
+      - JWT_COOKIE_SAME_SITE=lax
+      - JWT_COOKIE_PATH=/
+      - JWT_COOKIE_DOMAIN=
+    ports:
+      - "8003:8003"
+    depends_on:
+      mysql-purchasing:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      employee-service:
+        condition: service_started
+
+  # --- FRONTEND SERVICE ---
+  frontend:
+    build:
+      context: ./fe-host
+      dockerfile: Dockerfile
+    container_name: erp-frontend
+    restart: always
+    ports:
+      - "5173:80"
+    depends_on:
+      - auth-service
+      - employee-service
+      - purchasing-service
+
+volumes:
+  mysql_auth_data:
+  mysql_employee_data:
+  mysql_purchasing_data:
