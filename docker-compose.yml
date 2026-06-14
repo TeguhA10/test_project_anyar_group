@@ -6,6 +6,7 @@ services:
     image: mysql:8.4
     container_name: mysql-auth
     restart: always
+    command: --mysql-native-password=ON
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: db_auth
@@ -24,6 +25,7 @@ services:
     image: mysql:8.4
     container_name: mysql-employee
     restart: always
+    command: --mysql-native-password=ON
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: db_hrm
@@ -42,6 +44,7 @@ services:
     image: mysql:8.4
     container_name: mysql-purchasing
     restart: always
+    command: --mysql-native-password=ON
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: db_purchasing
