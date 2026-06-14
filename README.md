@@ -35,7 +35,7 @@ The entire stack is configured via the root [docker-compose.yml](https://github.
 | **auth-service** | Authentication, JWT issue, Users API | **8001** | 8001 | [auth_service](https://github.com/TeguhA10/auth_service) | `db_auth` (on `mysql-auth`) |
 | **employee-service** | HRIS, Branches, Employees, Positions | **8002** | 8002 | [employee_service](https://github.com/TeguhA10/employee_service) | `db_hrm` (on `mysql-employee`) |
 | **purchasing-service** | Purchasing, Vendors, Items, POs | **8003** | 8003 | [purchasing_service](https://github.com/TeguhA10/purchasing_service) | `db_purchasing` (on `mysql-purchasing`) |
-| **mysql-auth** | MySQL 8.4 Database for Auth | **3306** | 3306 | *Pre-built MySQL image* | - |
+| **mysql-auth** | MySQL 8.4 Database for Auth | **3309** | 3306 | *Pre-built MySQL image* | - |
 | **mysql-employee** | MySQL 8.4 Database for HRIS | **3307** | 3306 | *Pre-built MySQL image* | - |
 | **mysql-purchasing** | MySQL 8.4 Database for Purchasing | **3308** | 3306 | *Pre-built MySQL image* | - |
 
@@ -83,7 +83,7 @@ docker compose down -v
 
 ### 1. Database Connections
 You can connect to each isolated database from your host machine using any DB client (e.g. DBeaver, TablePlus, or command line):
-- **Auth DB:** Host: `127.0.0.1`, Port: `3306`, Database: `db_auth`, User: `root`, Password: `root`
+- **Auth DB:** Host: `127.0.0.1`, Port: `3309`, Database: `db_auth`, User: `root`, Password: `root`
 - **HRIS DB:** Host: `127.0.0.1`, Port: `3307`, Database: `db_hrm`, User: `root`, Password: `root`
 - **Purchasing DB:** Host: `127.0.0.1`, Port: `3308`, Database: `db_purchasing`, User: `root`, Password: `root`
 
@@ -102,3 +102,64 @@ Postman collections are provided at the root of the project to test APIs indepen
 - [AUTH SERVICE.postman_collection.json](https://github.com/TeguhA10/test_project_anyar_group/blob/main/AUTH%20SERVICE.postman_collection.json)
 - [EMPLOYEE SERVICE.postman_collection.json](https://github.com/TeguhA10/test_project_anyar_group/blob/main/EMPLOYEE%20SERVICE.postman_collection.json)
 - [PURCHASING SERVICE.postman_collection.json](https://github.com/TeguhA10/test_project_anyar_group/blob/main/PURCHASING%20SERVICE.postman_collection.json)
+
+---
+
+## Git Submodule Management
+
+This project uses Git Submodules to manage the separate microservices. When working with submodules, follow these guidelines:
+
+### 1. Cloning the Repository
+When cloning this repository for the first time, you must include the `--recursive` flag to clone all submodules along with the main repository:
+```bash
+git clone --recursive https://github.com/TeguhA10/test_project_anyar_group.git
+```
+
+If you have already cloned the repository without the submodules (leaving the directories empty), run:
+```bash
+git submodule update --init --recursive
+```
+
+### 2. Updating Submodules to Latest Commit
+To pull the latest changes for the main repository and synchronize all submodules to the exact commits tracked by the main repository:
+```bash
+git pull origin main
+git submodule update --init --recursive
+```
+
+To update submodules to their own remote `main` branch heads:
+```bash
+git submodule update --remote --merge
+```
+
+---
+
+## Docker & MySQL CLI Usage
+
+All services and databases are isolated in Docker containers. Here are useful CLI commands for management:
+
+### 1. Accessing MySQL Database inside Docker Containers
+You can log in to any database CLI directly using `docker exec`:
+
+- **Auth Database CLI**:
+  ```bash
+  docker exec -it mysql-auth mysql -u root -proot db_auth
+  ```
+- **Employee (HRIS) Database CLI**:
+  ```bash
+  docker exec -it mysql-employee mysql -u root -proot db_hrm
+  ```
+- **Purchasing Database CLI**:
+  ```bash
+  docker exec -it mysql-purchasing mysql -u root -proot db_purchasing
+  ```
+
+### 2. Refreshing/Re-initializing Databases
+The databases are seeded using the SQL dumps located in `./mysql/init/` on initial creation. If you modify these SQL dump files or need to completely wipe and re-initialize the databases, run:
+```bash
+# Hentikan dan hapus volume database lama
+docker compose down -v
+
+# Jalankan ulang kontainer, ini akan memicu re-inisialisasi dari file SQL di mysql/init/
+docker compose up --build -d
+```
